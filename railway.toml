@@ -1,0 +1,17 @@
+[build]
+builder = "dockerfile"
+
+[services.api]
+dockerfile = "Dockerfile.api"
+source = "."
+
+[services.api.deploy]
+startCommand = "uvicorn api.main:app --host 0.0.0.0 --port 8000"
+healthcheckPath = "/health"
+
+[services.worker]
+dockerfile = "Dockerfile.worker"
+source = "."
+
+[services.worker.deploy]
+startCommand = "celery -A tasks worker --loglevel=info --concurrency=2 --prefetch-multiplier=1"

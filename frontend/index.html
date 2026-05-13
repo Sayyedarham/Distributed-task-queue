@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TaskQueue — Distributed Job Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;700&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --border-bright: #3a3a3a;
+    --text: #e8e8e8;
+    --text-dim: #666;
+    --text-muted: #444;
+    --accent: #00ff88;
+    --accent-dim: rgba(0,255,136,0.12);
+    --accent-glow: rgba(0,255,136,0.4);
+    --warn: #ffaa00;
+    --warn-dim: rgba(255,170,0,0.12);
+    --danger: #ff4455;
+    --danger-dim: rgba(255,68,85,0.12);
+    --info: #4488ff;
+    --info-dim: rgba(68,136,255,0.12);
+    --purple: #aa66ff;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 48px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 3px 8px;
+    text-transform: uppercase;
+  }
+
+  .logo-title {
+    font-family: var(--sans);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .api-url-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+  }
+
+  .api-url-bar label {
+    color: var(--text-dim);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .api-url-bar input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 6px 12px;
+    width: 260px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .api-url-bar input:focus {
+    border-color: var(--accent);
+  }
+
+  /* ── Layout ── */
+  .grid {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── Panel ── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .panel-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .panel-body {
+    padding: 20px;
+  }
+
+  /* ── Form ── */
+  .field {
+    margin-bottom: 16px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .field select,
+  .field input,
+  .field textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+  }
+
+  .field select:focus,
+  .field input:focus,
+  .field textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent-glow);
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 70px;
+  }
+
+  .dynamic-fields {
+    border-left: 2px solid var(--border);
+    padding-left: 16px;
+    margin-bottom: 16px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-primary:hover {
+    background: #00ffaa;
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  .btn-primary:active { transform: translateY(1px); }
+
+  .btn-primary:disabled {
+    background: var(--border-bright);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .btn-danger {
+    background: transparent;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 4px 10px;
+    font-size: 10px;
+  }
+
+  .btn-danger:hover {
+    background: var(--danger-dim);
+  }
+
+  /* ── Stats row ── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .stat {
+    background: var(--surface);
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .stat.total .stat-value  { color: var(--text); }
+  .stat.running .stat-value { color: var(--warn); }
+  .stat.done .stat-value { color: var(--accent); }
+  .stat.failed .stat-value { color: var(--danger); }
+
+  /* ── Job list ── */
+  .job-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .job-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    transition: border-color 0.2s;
+    animation: slideIn 0.25s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .job-card:hover { border-color: var(--border-bright); }
+
+  .job-card.status-SUCCESS { border-left: 3px solid var(--accent); }
+  .job-card.status-FAILURE { border-left: 3px solid var(--danger); }
+  .job-card.status-PROGRESS { border-left: 3px solid var(--warn); }
+  .job-card.status-PENDING  { border-left: 3px solid var(--text-muted); }
+  .job-card.status-STARTED  { border-left: 3px solid var(--info); }
+
+  .job-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .job-id {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: var(--mono);
+  }
+
+  .job-id span {
+    color: var(--purple);
+  }
+
+  .job-actions { display: flex; gap: 6px; align-items: center; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .badge-PENDING  { background: var(--surface2); color: var(--text-dim); }
+  .badge-STARTED  { background: var(--info-dim); color: var(--info); }
+  .badge-PROGRESS { background: var(--warn-dim); color: var(--warn); }
+  .badge-SUCCESS  { background: var(--accent-dim); color: var(--accent); }
+  .badge-FAILURE  { background: var(--danger-dim); color: var(--danger); }
+  .badge-REVOKED  { background: var(--surface2); color: var(--text-muted); }
+
+  .job-type {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    height: 3px;
+    background: var(--surface2);
+    margin: 8px 0;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--warn);
+    transition: width 0.4s ease;
+    box-shadow: 0 0 8px var(--warn);
+  }
+
+  .progress-bar.done {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  .progress-text {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* Result */
+  .job-result {
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--surface2);
+    padding: 8px 10px;
+    margin-top: 8px;
+    border-left: 2px solid var(--border);
+    word-break: break-all;
+    white-space: pre-wrap;
+    max-height: 80px;
+    overflow-y: auto;
+  }
+
+  .job-result.error { color: var(--danger); border-color: var(--danger); }
+
+  /* Spinner */
+  .spinner {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border: 2px solid var(--warn);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Empty state ── */
+  .empty {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-muted);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  .empty::before {
+    content: '[ NO TASKS ]';
+    display: block;
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: var(--border-bright);
+  }
+
+  /* ── Flower link ── */
+  .flower-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+
+  .flower-link:hover { border-color: var(--purple); color: var(--purple); }
+
+  .flower-dot {
+    width: 8px; height: 8px;
+    background: var(--purple);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--purple);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.4; }
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 12px 18px;
+    font-size: 12px;
+    z-index: 100;
+    animation: toastIn 0.2s ease;
+    max-width: 320px;
+  }
+
+  .toast.error { border-left-color: var(--danger); }
+  .toast.warn  { border-left-color: var(--warn); }
+
+  @keyframes toastIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-bright); }
+
+  /* ── Constraint Bar ── */
+  .constraint-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .constraint-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+  }
+
+  .constraint-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+
+  .constraint-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .constraint-val {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-dim);
+    transition: color 0.2s;
+  }
+
+  .constraint-val.warn  { color: var(--warn); }
+  .constraint-val.danger { color: var(--danger); }
+  .constraint-val.ok    { color: var(--accent); }
+
+  .constraint-track {
+    height: 2px;
+    background: var(--surface2);
+    overflow: hidden;
+  }
+
+  .constraint-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.3s ease, background 0.3s ease;
+  }
+
+  .constraint-fill.warn   { background: var(--warn); box-shadow: 0 0 6px var(--warn); }
+  .constraint-fill.danger { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
+
+  /* ── Example Jobs ── */
+  .examples-section {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .examples-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .examples-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .btn-example {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+  }
+
+  .btn-example:hover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .btn-example:active { transform: translateY(1px); }
+
+  .btn-example .ex-name {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .btn-example .ex-desc {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 800px) {
+    .grid { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2,1fr); }
+    header { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .api-url-bar input { width: 200px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="logo">
+      <div class="logo-mark">TQ</div>
+      <div class="logo-title">TaskQueue Dashboard</div>
+    </div>
+    <div class="api-url-bar">
+      <label>API</label>
+      <input type="text" id="apiUrl" value="https://api-production-f1021.up.railway.app" placeholder="http://localhost:8000">
+    </div>
+  </header>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat total">
+      <div class="stat-value" id="statTotal">0</div>
+      <div class="stat-label">Total</div>
+    </div>
+    <div class="stat running">
+      <div class="stat-value" id="statRunning">0</div>
+      <div class="stat-label">Running</div>
+    </div>
+    <div class="stat done">
+      <div class="stat-value" id="statDone">0</div>
+      <div class="stat-label">Done</div>
+    </div>
+    <div class="stat failed">
+      <div class="stat-value" id="statFailed">0</div>
+      <div class="stat-label">Failed</div>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- Submit panel -->
+    <div>
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Submit Job</span>
+        </div>
+        <div class="panel-body">
+
+          <!-- Constraint Bar -->
+          <div class="constraint-bar">
+            <div class="constraint-item">
+              <div class="constraint-row">
+                <span class="constraint-label">Active Jobs</span>
+                <span class="constraint-val" id="cActiveVal">0 / 3</span>
+              </div>
+              <div class="constraint-track">
+                <div class="constraint-fill" id="cActiveFill" style="width:0%"></div>
+              </div>
+            </div>
+            <div class="constraint-item">
+              <div class="constraint-row">
+                <span class="constraint-label">Session Jobs</span>
+                <span class="constraint-val" id="cSessionVal">0 / 10</span>
+              </div>
+              <div class="constraint-track">
+                <div class="constraint-fill" id="cSessionFill" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Example Jobs -->
+          <div class="examples-section">
+            <div class="examples-label">⚡ Quick Examples</div>
+            <div class="examples-grid">
+              <button class="btn-example" onclick="loadExample('quick')">
+                <span class="ex-name">▶ Quick Task</span>
+                <span class="ex-desc">Generic · 2 steps</span>
+              </button>
+              <button class="btn-example" onclick="loadExample('heavy')">
+                <span class="ex-name">⏳ Heavy Task</span>
+                <span class="ex-desc">Generic · 8 steps</span>
+              </button>
+              <button class="btn-example" onclick="loadExample('email')">
+                <span class="ex-name">✉ Send Email</span>
+                <span class="ex-desc">Email · demo payload</span>
+              </button>
+              <button class="btn-example" onclick="loadExample('image')">
+                <span class="ex-name">🖼 Resize Image</span>
+                <span class="ex-desc">Image · 1280×720</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Job Type</label>
+            <select id="jobType" onchange="updateFields()">
+              <option value="generic">Generic (multi-step)</option>
+              <option value="email">Email</option>
+              <option value="image">Image Resize</option>
+            </select>
+          </div>
+
+          <!-- Generic -->
+          <div class="dynamic-fields" id="fieldsGeneric">
+            <div class="field">
+              <label>Steps (1–10)</label>
+              <input type="number" id="steps" value="4" min="1" max="10">
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="dynamic-fields" id="fieldsEmail" style="display:none">
+            <div class="field">
+              <label>To</label>
+              <input type="text" id="emailTo" placeholder="user@example.com">
+            </div>
+            <div class="field">
+              <label>Subject</label>
+              <input type="text" id="emailSubject" placeholder="Hello from queue">
+            </div>
+            <div class="field">
+              <label>Body</label>
+              <textarea id="emailBody" placeholder="Message body..."></textarea>
+            </div>
+          </div>
+
+          <!-- Image -->
+          <div class="dynamic-fields" id="fieldsImage" style="display:none">
+            <div class="field">
+              <label>Filename</label>
+              <input type="text" id="imgFile" placeholder="photo.jpg">
+            </div>
+            <div class="field">
+              <label>Width × Height</label>
+              <div style="display:flex;gap:8px;">
+                <input type="number" id="imgW" value="800" placeholder="W">
+                <input type="number" id="imgH" value="600" placeholder="H">
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="submitBtn" onclick="submitJob()">
+            ▶ Submit Job
+          </button>
+        </div>
+      </div>
+
+      <a class="flower-link" id="flowerLink" href="http://localhost:5555" target="_blank">
+        <div class="flower-dot"></div>
+        Open Flower Monitor →
+      </a>
+    </div>
+
+    <!-- Job list panel -->
+    <div>
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Live Tasks</span>
+          <button class="btn btn-danger" onclick="clearAll()">Clear All</button>
+        </div>
+        <div class="panel-body" style="padding:12px;">
+          <div id="jobList"><div class="empty"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toastContainer"></div>
+
+<script>
+  // ── State ─────────────────────────────────────────────────────────────────
+  const LIMIT_CONCURRENT = 3;
+  const LIMIT_SESSION    = 10;
+  let sessionCount = 0;
+
+  const jobs = new Map(); // task_id → {type, status, progress, result, error, ts}
+  const pollers = new Map(); // task_id → intervalId
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function apiBase() {
+    return document.getElementById('apiUrl').value.replace(/\/$/, '');
+  }
+
+  function updateFlowerLink() {
+    const base = apiBase();
+    const flowerPort = base.includes('localhost') ? 'http://localhost:5555' : base.replace(/:\d+$/, ':5555');
+    document.getElementById('flowerLink').href = flowerPort;
+  }
+
+  document.getElementById('apiUrl').addEventListener('input', updateFlowerLink);
+
+  function toast(msg, type = '') {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.textContent = msg;
+    document.getElementById('toastContainer').appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  function shortId(id) {
+    return id ? id.split('-')[0] + '…' : '?';
+  }
+
+  // ── Form dynamics ─────────────────────────────────────────────────────────
+  function updateFields() {
+    const t = document.getElementById('jobType').value;
+    document.getElementById('fieldsGeneric').style.display = t === 'generic' ? '' : 'none';
+    document.getElementById('fieldsEmail').style.display   = t === 'email'   ? '' : 'none';
+    document.getElementById('fieldsImage').style.display   = t === 'image'   ? '' : 'none';
+  }
+
+  // ── Example presets ───────────────────────────────────────────────────────
+  const EXAMPLES = {
+    quick: { type: 'generic', steps: 2 },
+    heavy: { type: 'generic', steps: 8 },
+    email: { type: 'email', to: 'demo@example.com', subject: 'TaskQueue test', body: 'Hello from the distributed task queue!' },
+    image: { type: 'image', filename: 'banner.jpg', width: 1280, height: 720 },
+  };
+
+  function loadExample(key) {
+    const e = EXAMPLES[key];
+    document.getElementById('jobType').value = e.type;
+    updateFields();
+
+    if (e.type === 'generic') {
+      document.getElementById('steps').value = e.steps;
+    } else if (e.type === 'email') {
+      document.getElementById('emailTo').value      = e.to;
+      document.getElementById('emailSubject').value = e.subject;
+      document.getElementById('emailBody').value    = e.body;
+    } else {
+      document.getElementById('imgFile').value = e.filename;
+      document.getElementById('imgW').value    = e.width;
+      document.getElementById('imgH').value    = e.height;
+    }
+
+    submitJob();
+  }
+
+  // ── Constraints ────────────────────────────────────────────────────────────
+  function activeCount() {
+    return [...jobs.values()].filter(j => ['PENDING','STARTED','PROGRESS'].includes(j.status)).length;
+  }
+
+  function updateConstraintBar() {
+    const active  = activeCount();
+    const session = sessionCount;
+
+    const activePct  = (active  / LIMIT_CONCURRENT) * 100;
+    const sessionPct = (session / LIMIT_SESSION)    * 100;
+
+    const activeLevel  = active  >= LIMIT_CONCURRENT ? 'danger' : active  >= 2 ? 'warn' : 'ok';
+    const sessionLevel = session >= LIMIT_SESSION    ? 'danger' : session >= 8  ? 'warn' : 'ok';
+
+    document.getElementById('cActiveVal').textContent   = `${active} / ${LIMIT_CONCURRENT}`;
+    document.getElementById('cSessionVal').textContent  = `${session} / ${LIMIT_SESSION}`;
+    document.getElementById('cActiveVal').className     = `constraint-val ${activeLevel}`;
+    document.getElementById('cSessionVal').className    = `constraint-val ${sessionLevel}`;
+    document.getElementById('cActiveFill').style.width  = `${Math.min(activePct, 100)}%`;
+    document.getElementById('cSessionFill').style.width = `${Math.min(sessionPct, 100)}%`;
+    document.getElementById('cActiveFill').className    = `constraint-fill ${activeLevel === 'ok' ? '' : activeLevel}`;
+    document.getElementById('cSessionFill').className   = `constraint-fill ${sessionLevel === 'ok' ? '' : sessionLevel}`;
+
+    const blocked = active >= LIMIT_CONCURRENT || session >= LIMIT_SESSION;
+    document.getElementById('submitBtn').disabled = blocked;
+    document.querySelectorAll('.btn-example').forEach(b => b.disabled = blocked);
+    if (blocked) {
+      document.getElementById('submitBtn').textContent =
+        session >= LIMIT_SESSION ? '✕ Session limit reached' : '✕ Too many active jobs';
+    } else {
+      document.getElementById('submitBtn').textContent = '▶ Submit Job';
+    }
+  }
+
+  function checkConstraints() {
+    const active  = activeCount();
+    const session = sessionCount;
+    if (session >= LIMIT_SESSION) {
+      toast('Session limit reached (10/10). Refresh to reset.', 'error');
+      return false;
+    }
+    if (active >= LIMIT_CONCURRENT) {
+      toast(`Max ${LIMIT_CONCURRENT} concurrent jobs. Wait for one to finish.`, 'warn');
+      return false;
+    }
+    if (session >= 8) toast(`Warning: ${session}/10 session jobs used`, 'warn');
+    return true;
+  }
+
+  // ── Submit ─────────────────────────────────────────────────────────────────
+  async function submitJob() {
+    if (!checkConstraints()) return;
+    const btn = document.getElementById('submitBtn');
+    const type = document.getElementById('jobType').value;
+    const body = { type };
+
+    if (type === 'generic') {
+      body.steps = parseInt(document.getElementById('steps').value) || 3;
+    } else if (type === 'email') {
+      body.to      = document.getElementById('emailTo').value || 'test@example.com';
+      body.subject = document.getElementById('emailSubject').value || 'Test';
+      body.body    = document.getElementById('emailBody').value;
+    } else {
+      body.filename = document.getElementById('imgFile').value || 'image.jpg';
+      body.width    = parseInt(document.getElementById('imgW').value) || 800;
+      body.height   = parseInt(document.getElementById('imgH').value) || 600;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    try {
+      const res = await fetch(`${apiBase()}/jobs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || res.statusText);
+      }
+
+      const data = await res.json();
+      sessionCount++;
+      addJob(data.task_id, type);
+      startPolling(data.task_id);
+      toast(`Job submitted: ${shortId(data.task_id)}`);
+    } catch (e) {
+      toast(`Error: ${e.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '▶ Submit Job';
+    }
+  }
+
+  // ── Job tracking ───────────────────────────────────────────────────────────
+  function addJob(id, type) {
+    jobs.set(id, { type, status: 'PENDING', progress: null, result: null, error: null, ts: Date.now() });
+    renderJobs();
+  }
+
+  function startPolling(id) {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`${apiBase()}/jobs/${id}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const job = jobs.get(id);
+        if (!job) return;
+
+        job.status = data.status;
+        job.progress = data.progress || null;
+        job.result = data.result || null;
+        job.error = data.error || null;
+
+        renderJobs();
+
+        if (['SUCCESS', 'FAILURE', 'REVOKED'].includes(data.status)) {
+          clearInterval(interval);
+          pollers.delete(id);
+          if (data.status === 'SUCCESS') toast(`✓ Job done: ${shortId(id)}`);
+          if (data.status === 'FAILURE') toast(`✗ Job failed: ${shortId(id)}`, 'error');
+        }
+      } catch (e) {
+        // swallow network errors silently
+      }
+    }, 3000);
+    pollers.set(id, interval);
+  }
+
+  async function revokeJob(id) {
+    try {
+      await fetch(`${apiBase()}/jobs/${id}`, { method: 'DELETE' });
+      const job = jobs.get(id);
+      if (job) { job.status = 'REVOKED'; renderJobs(); }
+      const poller = pollers.get(id);
+      if (poller) { clearInterval(poller); pollers.delete(id); }
+      toast(`Job revoked: ${shortId(id)}`, 'warn');
+    } catch (e) {
+      toast(`Revoke failed: ${e.message}`, 'error');
+    }
+  }
+
+  function clearAll() {
+    pollers.forEach(i => clearInterval(i));
+    pollers.clear();
+    jobs.clear();
+    sessionCount = 0;
+    renderJobs();
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+  function renderJobs() {
+    updateStats();
+    updateConstraintBar();
+    const container = document.getElementById('jobList');
+
+    if (jobs.size === 0) {
+      container.innerHTML = '<div class="empty"></div>';
+      return;
+    }
+
+    const sorted = [...jobs.entries()].sort((a, b) => b[1].ts - a[1].ts);
+
+    container.innerHTML = sorted.map(([id, job]) => {
+      const isActive = ['PENDING','STARTED','PROGRESS'].includes(job.status);
+      const pct = job.progress ? Math.round((job.progress.current / job.progress.total) * 100) : 0;
+      const progressHtml = job.status === 'PROGRESS' ? `
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:${pct}%"></div>
+        </div>
+        <div class="progress-text">${job.progress.step || ''} — ${pct}%</div>
+      ` : job.status === 'SUCCESS' ? `
+        <div class="progress-wrap">
+          <div class="progress-bar done" style="width:100%"></div>
+        </div>
+      ` : '';
+
+      const resultHtml = job.result ? `
+        <div class="job-result">${JSON.stringify(job.result, null, 2)}</div>
+      ` : job.error ? `
+        <div class="job-result error">${job.error}</div>
+      ` : '';
+
+      const spinnerHtml = isActive ? '<span class="spinner"></span>' : '';
+
+      return `
+        <div class="job-card status-${job.status}">
+          <div class="job-top">
+            <div class="job-id">ID: <span>${shortId(id)}</span></div>
+            <div class="job-actions">
+              ${spinnerHtml}
+              <span class="badge badge-${job.status}">${job.status}</span>
+              ${isActive ? `<button class="btn btn-danger" onclick="revokeJob('${id}')">✕</button>` : ''}
+            </div>
+          </div>
+          <div class="job-type">type: ${job.type}</div>
+          ${progressHtml}
+          ${resultHtml}
+        </div>
+      `;
+    }).join('');
+  }
+
+  function updateStats() {
+    const all = [...jobs.values()];
+    document.getElementById('statTotal').textContent   = all.length;
+    document.getElementById('statRunning').textContent = all.filter(j => ['PENDING','STARTED','PROGRESS'].includes(j.status)).length;
+    document.getElementById('statDone').textContent    = all.filter(j => j.status === 'SUCCESS').length;
+    document.getElementById('statFailed').textContent  = all.filter(j => j.status === 'FAILURE').length;
+  }
+</script>
+</body>
+</html>
