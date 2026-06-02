@@ -149,7 +149,7 @@ Celery's default prefork pool uses `billiard` which has known issues with Window
 
 ---
 
-## What I'd Add Next
+## What I'll Add Next
 
 - Auth middleware (API key or JWT) on job submission
 - Dead letter queue for failed tasks with retry policy
