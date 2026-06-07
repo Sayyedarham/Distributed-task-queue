@@ -43,257 +43,306 @@
   /* grid background */
   body::before {
     content: '';
-    position: fixed; inset: 0;
+    position: fixed;
+    inset: 0;
     background-image:
       linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
       linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
     background-size: 40px 40px;
-    pointer-events: none; z-index: 0;
+    pointer-events: none;
+    z-index: 0;
   }
 
   .container {
-    position: relative; z-index: 1;
-    max-width: 1200px; margin: 0 auto; padding: 40px 24px;
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px;
   }
 
   /* ── Header ── */
   header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 32px; padding-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 48px;
+    padding-bottom: 24px;
     border-bottom: 1px solid var(--border);
   }
 
-  .logo { display: flex; align-items: baseline; gap: 12px; }
-  .logo-mark {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.2em;
-    color: var(--accent); border: 1px solid var(--accent); padding: 3px 8px;
-    text-transform: uppercase;
-  }
-  .logo-title {
-    font-family: var(--sans); font-size: 22px; font-weight: 600;
-    color: var(--text); letter-spacing: -0.02em;
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
   }
 
-  .header-right {
-    display: flex; align-items: center; gap: 16px;
+  .logo-mark {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 3px 8px;
+    text-transform: uppercase;
+  }
+
+  .logo-title {
+    font-family: var(--sans);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
   }
 
   .api-url-bar {
-    display: flex; align-items: center; gap: 10px; font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
   }
+
   .api-url-bar label {
-    color: var(--text-dim); font-size: 11px;
-    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-dim);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
+
   .api-url-bar input {
-    background: var(--surface); border: 1px solid var(--border);
-    color: var(--text); font-family: var(--mono); font-size: 12px;
-    padding: 6px 12px; width: 260px; outline: none; transition: border-color 0.2s;
-  }
-  .api-url-bar input:focus { border-color: var(--accent); }
-
-  .health-pill {
-    display: flex; align-items: center; gap: 6px;
-    padding: 4px 10px; background: var(--surface); border: 1px solid var(--border);
-    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-  }
-  .health-dot {
-    width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted);
-  }
-  .health-dot.online { background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); animation: pulse-dot 2s ease-in-out infinite; }
-  .health-dot.offline { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
-  .health-dot.warn { background: var(--warn); box-shadow: 0 0 6px var(--warn); }
-
-  @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-  .clock {
-    font-family: var(--mono); font-size: 12px; color: var(--text-dim);
-    font-variant-numeric: tabular-nums; min-width: 64px; text-align: right;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 6px 12px;
+    width: 260px;
+    outline: none;
+    transition: border-color 0.2s;
   }
 
-  /* ── Stats ── */
-  .stats {
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px;
-    background: var(--border); border: 1px solid var(--border);
-    margin-bottom: 24px;
+  .api-url-bar input:focus {
+    border-color: var(--accent);
   }
-  .stat {
-    background: var(--surface); padding: 16px; text-align: center;
-    transition: background 0.2s;
-  }
-  .stat:hover { background: var(--surface2); }
-  .stat-value { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
-  .stat-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
-  .stat.total .stat-value  { color: var(--text); }
-  .stat.running .stat-value { color: var(--warn); }
-  .stat.done .stat-value    { color: var(--accent); }
-  .stat.failed .stat-value  { color: var(--danger); }
-  .stat.workers .stat-value { color: var(--info); }
 
   /* ── Layout ── */
   .grid {
-    display: grid; grid-template-columns: 380px 1fr; gap: 24px; align-items: start;
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    align-items: start;
   }
 
   /* ── Panel ── */
   .panel {
-    background: var(--surface); border: 1px solid var(--border);
-    margin-bottom: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
   }
+
   .panel-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
   }
+
   .panel-title {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
-    text-transform: uppercase; color: var(--text-dim);
-    display: flex; align-items: center; gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
   }
-  .panel-body { padding: 20px; }
+
+  .panel-body {
+    padding: 20px;
+  }
 
   /* ── Form ── */
-  .field { margin-bottom: 16px; }
+  .field {
+    margin-bottom: 16px;
+  }
+
   .field label {
-    display: block; font-size: 10px; font-weight: 700;
-    letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--text-dim); margin-bottom: 6px;
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
   }
-  .field select, .field input, .field textarea {
-    width: 100%; background: var(--bg); border: 1px solid var(--border);
-    color: var(--text); font-family: var(--mono); font-size: 13px;
-    padding: 9px 12px; outline: none; transition: border-color 0.15s; appearance: none;
+
+  .field select,
+  .field input,
+  .field textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
   }
-  .field select:focus, .field input:focus, .field textarea:focus {
-    border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-glow);
+
+  .field select:focus,
+  .field input:focus,
+  .field textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent-glow);
   }
-  .field textarea { resize: vertical; min-height: 70px; }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 70px;
+  }
 
   .dynamic-fields {
-    border-left: 2px solid var(--border); padding-left: 16px; margin-bottom: 16px;
+    border-left: 2px solid var(--border);
+    padding-left: 16px;
+    margin-bottom: 16px;
   }
 
   .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 10px 20px; font-family: var(--mono); font-size: 12px;
-    font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-    cursor: pointer; border: none; transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
   }
+
   .btn-primary {
-    background: var(--accent); color: #000; width: 100%; justify-content: center;
+    background: var(--accent);
+    color: #000;
+    width: 100%;
+    justify-content: center;
   }
-  .btn-primary:hover { background: #00ffaa; box-shadow: 0 0 20px var(--accent-glow); }
+
+  .btn-primary:hover {
+    background: #00ffaa;
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
   .btn-primary:active { transform: translateY(1px); }
+
   .btn-primary:disabled {
-    background: var(--border-bright); color: var(--text-muted);
-    cursor: not-allowed; box-shadow: none;
+    background: var(--border-bright);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    box-shadow: none;
   }
+
   .btn-danger {
-    background: transparent; border: 1px solid var(--danger); color: var(--danger);
-    padding: 4px 10px; font-size: 10px;
+    background: transparent;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 4px 10px;
+    font-size: 10px;
   }
-  .btn-danger:hover { background: var(--danger-dim); }
-  .btn-sm {
-    padding: 4px 10px; font-size: 10px; background: var(--bg);
-    border: 1px solid var(--border); color: var(--text-dim);
-  }
-  .btn-sm:hover { border-color: var(--text-dim); color: var(--text); }
 
-  /* ── Constraint Bar ── */
-  .constraint-bar {
-    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
-    margin-bottom: 16px;
+  .btn-danger:hover {
+    background: var(--danger-dim);
   }
-  .constraint-item {
-    background: var(--bg); border: 1px solid var(--border); padding: 8px 12px;
-  }
-  .constraint-row {
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;
-  }
-  .constraint-label { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
-  .constraint-val { font-size: 11px; font-weight: 700; color: var(--text-dim); transition: color 0.2s; }
-  .constraint-val.warn { color: var(--warn); }
-  .constraint-val.danger { color: var(--danger); }
-  .constraint-val.ok { color: var(--accent); }
-  .constraint-track { height: 2px; background: var(--surface2); overflow: hidden; }
-  .constraint-fill { height: 100%; background: var(--accent); transition: width 0.3s ease, background 0.3s ease; }
-  .constraint-fill.warn { background: var(--warn); box-shadow: 0 0 6px var(--warn); }
-  .constraint-fill.danger { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
 
-  /* ── Example Jobs ── */
-  .examples-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
-  .examples-label {
-    font-size: 10px; font-weight: 700; letter-spacing: 0.15em;
-    text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;
-  }
-  .examples-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .btn-example {
-    display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
-    padding: 10px 12px; background: var(--bg); border: 1px solid var(--border);
-    color: var(--text); font-family: var(--mono); cursor: pointer;
-    transition: all 0.15s; text-align: left;
-  }
-  .btn-example:hover { border-color: var(--accent); background: var(--accent-dim); }
-  .btn-example:active { transform: translateY(1px); }
-  .btn-example .ex-name { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
-  .btn-example .ex-desc { font-size: 10px; color: var(--text-muted); letter-spacing: 0.04em; }
-
-  /* ── Pipeline ── */
-  .pipeline {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  /* ── Stats row ── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
     margin-bottom: 24px;
   }
-  .pipeline-lane {
-    background: var(--surface); border: 1px solid var(--border);
-    min-height: 200px; display: flex; flex-direction: column;
-  }
-  .pipeline-header {
-    padding: 10px 14px; border-bottom: 1px solid var(--border);
-    background: var(--surface2); font-size: 10px;
-    font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--text-dim); display: flex; justify-content: space-between; align-items: center;
-  }
-  .pipeline-header .count { font-size: 11px; color: var(--text); font-weight: 500; }
-  .pipeline-track {
-    flex: 1; padding: 10px; display: flex; flex-direction: column; gap: 8px;
-    min-height: 160px;
-  }
-  .pipeline-track:empty::after {
-    content: '—'; display: flex; align-items: center; justify-content: center;
-    flex: 1; color: var(--text-muted); font-size: 24px; opacity: 0.3;
-  }
-  .lane-pending .pipeline-header { color: var(--warn); }
-  .lane-processing .pipeline-header { color: var(--accent); }
-  .lane-completed .pipeline-header { color: var(--info); }
 
-  /* ── Job Cards ── */
-  .job-card {
-    background: var(--bg); border: 1px solid var(--border); padding: 12px 14px;
-    transition: border-color 0.2s; animation: slideIn 0.25s ease;
-    cursor: pointer; position: relative;
+  .stat {
+    background: var(--surface);
+    padding: 16px;
+    text-align: center;
   }
+
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .stat.total .stat-value  { color: var(--text); }
+  .stat.running .stat-value { color: var(--warn); }
+  .stat.done .stat-value { color: var(--accent); }
+  .stat.failed .stat-value { color: var(--danger); }
+
+  /* ── Job list ── */
+  .job-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .job-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    transition: border-color 0.2s;
+    animation: slideIn 0.25s ease;
+  }
+
   @keyframes slideIn {
     from { opacity: 0; transform: translateY(-8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+
   .job-card:hover { border-color: var(--border-bright); }
+
   .job-card.status-SUCCESS { border-left: 3px solid var(--accent); }
   .job-card.status-FAILURE { border-left: 3px solid var(--danger); }
   .job-card.status-PROGRESS { border-left: 3px solid var(--warn); }
   .job-card.status-PENDING  { border-left: 3px solid var(--text-muted); }
   .job-card.status-STARTED  { border-left: 3px solid var(--info); }
-  .job-card.status-REVOKED  { border-left: 3px solid var(--text-muted); opacity: 0.6; }
 
   .job-top {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
   }
-  .job-id { font-size: 11px; color: var(--text-dim); font-family: var(--mono); }
-  .job-id span { color: var(--purple); }
+
+  .job-id {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: var(--mono);
+  }
+
+  .job-id span {
+    color: var(--purple);
+  }
+
   .job-actions { display: flex; gap: 6px; align-items: center; }
 
   .badge {
-    display: inline-block; padding: 2px 8px;
-    font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
+
   .badge-PENDING  { background: var(--surface2); color: var(--text-dim); }
   .badge-STARTED  { background: var(--info-dim); color: var(--info); }
   .badge-PROGRESS { background: var(--warn-dim); color: var(--warn); }
@@ -301,84 +350,134 @@
   .badge-FAILURE  { background: var(--danger-dim); color: var(--danger); }
   .badge-REVOKED  { background: var(--surface2); color: var(--text-muted); }
 
-  .job-type { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.1em; }
-
-  .progress-wrap { height: 3px; background: var(--surface2); margin: 8px 0; overflow: hidden; }
-  .progress-bar { height: 100%; background: var(--warn); transition: width 0.4s ease; box-shadow: 0 0 8px var(--warn); }
-  .progress-bar.done { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
-  .progress-text { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
-
-  .job-result {
-    font-size: 11px; color: var(--text-dim); background: var(--surface2);
-    padding: 8px 10px; margin-top: 8px; border-left: 2px solid var(--border);
-    word-break: break-all; white-space: pre-wrap; max-height: 80px; overflow-y: auto;
+  .job-type {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
   }
+
+  /* Progress bar */
+  .progress-wrap {
+    height: 3px;
+    background: var(--surface2);
+    margin: 8px 0;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--warn);
+    transition: width 0.4s ease;
+    box-shadow: 0 0 8px var(--warn);
+  }
+
+  .progress-bar.done {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  .progress-text {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* Result */
+  .job-result {
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--surface2);
+    padding: 8px 10px;
+    margin-top: 8px;
+    border-left: 2px solid var(--border);
+    word-break: break-all;
+    white-space: pre-wrap;
+    max-height: 80px;
+    overflow-y: auto;
+  }
+
   .job-result.error { color: var(--danger); border-color: var(--danger); }
 
+  /* Spinner */
   .spinner {
-    display: inline-block; width: 10px; height: 10px;
-    border: 2px solid var(--warn); border-top-color: transparent;
-    border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle;
+    display: inline-block;
+    width: 10px; height: 10px;
+    border: 2px solid var(--warn);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
   }
+
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── Worker Card ── */
-  .worker-card {
-    background: var(--surface); border: 1px solid var(--border); padding: 16px;
-    margin-bottom: 16px;
-  }
-  .worker-header {
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
-  }
-  .worker-name { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
-  .worker-status { font-size: 11px; color: var(--accent); }
-  .worker-status.offline { color: var(--danger); }
-  .worker-ekg {
-    height: 32px; width: 100%; position: relative; overflow: hidden;
-  }
-  .worker-ekg svg { width: 100%; height: 100%; }
-  .ekg-path {
-    fill: none; stroke: var(--accent); stroke-width: 1.5;
-    stroke-linecap: round; stroke-linejoin: round; opacity: 0.5;
-    animation: ekg-scroll 2s linear infinite;
-  }
-  @keyframes ekg-scroll {
-    0% { stroke-dashoffset: 200; stroke-dasharray: 200; }
-    100% { stroke-dashoffset: 0; stroke-dasharray: 200; }
-  }
-
-  /* ── System Log ── */
-  .system-log {
-    background: var(--bg); border: 1px solid var(--border); padding: 12px;
-    font-family: var(--mono); font-size: 11px; max-height: 140px; overflow-y: auto;
-    color: var(--text-dim);
-  }
-  .log-entry {
-    padding: 2px 0; border-bottom: 1px solid rgba(42,42,42,0.5);
-    display: flex; gap: 8px; animation: logFade 0.2s ease;
-  }
-  @keyframes logFade { from { opacity: 0; } to { opacity: 1; } }
-  .log-time { color: var(--text-muted); white-space: nowrap; font-variant-numeric: tabular-nums; min-width: 64px; }
-  .log-level { text-transform: uppercase; font-size: 9px; padding: 1px 5px; border-radius: 2px; font-weight: 500; white-space: nowrap; }
-  .log-level.info { color: var(--info); background: var(--info-dim); }
-  .log-level.warn { color: var(--warn); background: var(--warn-dim); }
-  .log-level.error { color: var(--danger); background: var(--danger-dim); }
-  .log-level.success { color: var(--accent); background: var(--accent-dim); }
-  .log-msg { color: var(--text-dim); word-break: break-all; }
-
   /* ── Empty state ── */
-  .empty { text-align: center; padding: 48px 20px; color: var(--text-muted); font-size: 12px; letter-spacing: 0.1em; }
-  .empty::before { content: '[ NO TASKS ]'; display: block; font-size: 18px; margin-bottom: 8px; color: var(--border-bright); }
+  .empty {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-muted);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  .empty::before {
+    content: '[ NO TASKS ]';
+    display: block;
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: var(--border-bright);
+  }
+
+  /* ── Flower link ── */
+  .flower-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+
+  .flower-link:hover { border-color: var(--purple); color: var(--purple); }
+
+  .flower-dot {
+    width: 8px; height: 8px;
+    background: var(--purple);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--purple);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.4; }
+  }
 
   /* ── Toast ── */
   .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--surface); border: 1px solid var(--border);
-    border-left: 3px solid var(--accent); padding: 12px 18px;
-    font-size: 12px; z-index: 100; animation: toastIn 0.2s ease; max-width: 320px;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 12px 18px;
+    font-size: 12px;
+    z-index: 100;
+    animation: toastIn 0.2s ease;
+    max-width: 320px;
   }
+
   .toast.error { border-left-color: var(--danger); }
   .toast.warn  { border-left-color: var(--warn); }
+
   @keyframes toastIn {
     from { transform: translateX(20px); opacity: 0; }
     to   { transform: translateX(0); opacity: 1; }
@@ -389,43 +488,126 @@
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border-bright); }
 
-  /* ── Flower link ── */
-  .flower-link {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 16px; background: var(--surface2); border: 1px solid var(--border);
-    margin-top: 16px; font-size: 12px; color: var(--text-dim); text-decoration: none;
-    transition: border-color 0.2s;
+  /* ── Constraint Bar ── */
+  .constraint-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
   }
-  .flower-link:hover { border-color: var(--purple); color: var(--purple); }
-  .flower-dot {
-    width: 8px; height: 8px; background: var(--purple);
-    border-radius: 50%; box-shadow: 0 0 8px var(--purple);
-    animation: pulse 1.5s ease-in-out infinite;
-  }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-  /* ── Login link ── */
-  .login-link {
-    display: block; text-align: center; margin-top: 12px;
-    font-size: 11px; color: var(--text-muted); text-decoration: none;
-    letter-spacing: 0.1em; text-transform: uppercase;
+  .constraint-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+  }
+
+  .constraint-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+
+  .constraint-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .constraint-val {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-dim);
     transition: color 0.2s;
   }
-  .login-link:hover { color: var(--accent); }
 
-  @media (max-width: 900px) {
+  .constraint-val.warn  { color: var(--warn); }
+  .constraint-val.danger { color: var(--danger); }
+  .constraint-val.ok    { color: var(--accent); }
+
+  .constraint-track {
+    height: 2px;
+    background: var(--surface2);
+    overflow: hidden;
+  }
+
+  .constraint-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.3s ease, background 0.3s ease;
+  }
+
+  .constraint-fill.warn   { background: var(--warn); box-shadow: 0 0 6px var(--warn); }
+  .constraint-fill.danger { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
+
+  /* ── Example Jobs ── */
+  .examples-section {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .examples-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .examples-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .btn-example {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+  }
+
+  .btn-example:hover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .btn-example:active { transform: translateY(1px); }
+
+  .btn-example .ex-name {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .btn-example .ex-desc {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 800px) {
     .grid { grid-template-columns: 1fr; }
-    .stats { grid-template-columns: repeat(3, 1fr); }
-    .pipeline { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2,1fr); }
     header { flex-direction: column; align-items: flex-start; gap: 16px; }
     .api-url-bar input { width: 200px; }
-    .constraint-bar { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 600px) {
-    .stats { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
-<base target="_blank">
 </head>
 <body>
 
@@ -436,16 +618,9 @@
       <div class="logo-mark">TQ</div>
       <div class="logo-title">TaskQueue Dashboard</div>
     </div>
-    <div class="header-right">
-      <div class="health-pill" id="apiHealth">
-        <div class="health-dot offline" id="apiDot"></div>
-        <span id="apiText">API</span>
-      </div>
-      <div class="health-pill" id="workerHealth">
-        <div class="health-dot offline" id="workerDot"></div>
-        <span id="workerText">Worker</span>
-      </div>
-      <div class="clock" id="clock">00:00:00</div>
+    <div class="api-url-bar">
+      <label>API</label>
+      <input type="text" id="apiUrl" value="https://taskqueue-api.onrender.com" placeholder="http://localhost:8000">
     </div>
   </header>
 
@@ -467,40 +642,11 @@
       <div class="stat-value" id="statFailed">0</div>
       <div class="stat-label">Failed</div>
     </div>
-    <div class="stat workers">
-      <div class="stat-value" id="statWorkers">—</div>
-      <div class="stat-label">Workers</div>
-    </div>
-  </div>
-
-  <!-- Pipeline -->
-  <div class="pipeline">
-    <div class="pipeline-lane lane-pending">
-      <div class="pipeline-header">
-        <span>Ingest</span>
-        <span class="count" id="countPending">0</span>
-      </div>
-      <div class="pipeline-track" id="lanePending"></div>
-    </div>
-    <div class="pipeline-lane lane-processing">
-      <div class="pipeline-header">
-        <span>Process</span>
-        <span class="count" id="countProcessing">0</span>
-      </div>
-      <div class="pipeline-track" id="laneProcessing"></div>
-    </div>
-    <div class="pipeline-lane lane-completed">
-      <div class="pipeline-header">
-        <span>Output</span>
-        <span class="count" id="countCompleted">0</span>
-      </div>
-      <div class="pipeline-track" id="laneCompleted"></div>
-    </div>
   </div>
 
   <div class="grid">
 
-    <!-- Left column: Submit + Constraints + Log -->
+    <!-- Submit panel -->
     <div>
       <div class="panel">
         <div class="panel-header">
@@ -526,15 +672,6 @@
               </div>
               <div class="constraint-track">
                 <div class="constraint-fill" id="cSessionFill" style="width:0%"></div>
-              </div>
-            </div>
-            <div class="constraint-item">
-              <div class="constraint-row">
-                <span class="constraint-label">Rate Limit</span>
-                <span class="constraint-val" id="cRateVal">0 / 10</span>
-              </div>
-              <div class="constraint-track">
-                <div class="constraint-fill" id="cRateFill" style="width:0%"></div>
               </div>
             </div>
           </div>
@@ -571,6 +708,7 @@
             </select>
           </div>
 
+          <!-- Generic -->
           <div class="dynamic-fields" id="fieldsGeneric">
             <div class="field">
               <label>Steps (1–10)</label>
@@ -578,6 +716,7 @@
             </div>
           </div>
 
+          <!-- Email -->
           <div class="dynamic-fields" id="fieldsEmail" style="display:none">
             <div class="field">
               <label>To</label>
@@ -593,6 +732,7 @@
             </div>
           </div>
 
+          <!-- Image -->
           <div class="dynamic-fields" id="fieldsImage" style="display:none">
             <div class="field">
               <label>Filename</label>
@@ -607,48 +747,9 @@
             </div>
           </div>
 
-          <button class="btn btn-primary" id="submitBtn" onclick="submitJob()">▶ Submit Job</button>
-        </div>
-      </div>
-
-      <!-- Worker Health -->
-      <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">⚡ Worker Health</span>
-          <span id="workerCountBadge" style="font-size:11px;color:var(--text-dim);">—</span>
-        </div>
-        <div class="panel-body" style="padding:16px;">
-          <div class="worker-card" id="workerCard" style="display:none;">
-            <div class="worker-header">
-              <span class="worker-name">Celery Worker Pool</span>
-              <span class="worker-status" id="workerStatusText">—</span>
-            </div>
-            <div class="worker-ekg">
-              <svg viewBox="0 0 200 32" preserveAspectRatio="none">
-                <path class="ekg-path" id="ekgPath" d="M0,16 L20,16 L28,8 L36,24 L44,16 L200,16" />
-              </svg>
-            </div>
-          </div>
-          <div id="workerOfflineMsg" style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">
-            No worker data available
-          </div>
-        </div>
-      </div>
-
-      <!-- System Log -->
-      <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">📋 System Log</span>
-          <button class="btn btn-sm" onclick="clearLog()">Clear</button>
-        </div>
-        <div class="panel-body" style="padding:0;">
-          <div class="system-log" id="systemLog">
-            <div class="log-entry">
-              <span class="log-time" id="bootTime">--:--:--</span>
-              <span class="log-level info">INFO</span>
-              <span class="log-msg">Dashboard initialized. Ready for tasks.</span>
-            </div>
-          </div>
+          <button class="btn btn-primary" id="submitBtn" onclick="submitJob()">
+            ▶ Submit Job
+          </button>
         </div>
       </div>
 
@@ -656,19 +757,14 @@
         <div class="flower-dot"></div>
         Open Flower Monitor →
       </a>
-
-      <a class="login-link" href="login.html">Operator Login →</a>
     </div>
 
-    <!-- Right column: Job list -->
+    <!-- Job list panel -->
     <div>
       <div class="panel">
         <div class="panel-header">
-          <span class="panel-title">📊 Live Tasks</span>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <span style="font-size:11px;color:var(--text-muted);" id="visitorId">ID: —</span>
-            <button class="btn btn-danger" onclick="clearAll()">Clear All</button>
-          </div>
+          <span class="panel-title">Live Tasks</span>
+          <button class="btn btn-danger" onclick="clearAll()">Clear All</button>
         </div>
         <div class="panel-body" style="padding:12px;">
           <div id="jobList"><div class="empty"></div></div>
@@ -686,132 +782,35 @@
   // ── State ─────────────────────────────────────────────────────────────────
   const LIMIT_CONCURRENT = 3;
   const LIMIT_SESSION    = 10;
-  const LIMIT_RATE       = 10;
   let sessionCount = 0;
-  let rateCount = 0;
-  let apiOnline = false;
-  let workerOnline = false;
 
-  const jobs = new Map();
-  const pollers = new Map();
-
-  const visitorId = 'TQ-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+  const jobs = new Map(); // task_id → {type, status, progress, result, error, ts}
+  const pollers = new Map(); // task_id → intervalId
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   function apiBase() {
-    return document.getElementById('apiUrl')?.value?.replace(/\/$/, '') || 'https://taskqueue-api.onrender.com';
+    return document.getElementById('apiUrl').value.replace(/\/$/, '');
   }
 
-  function nowTime() {
-    return new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  function updateFlowerLink() {
+    const base = apiBase();
+    const flowerPort = base.includes('localhost') ? 'http://localhost:5555' : base.replace(/:\d+$/, ':5555');
+    document.getElementById('flowerLink').href = flowerPort;
   }
 
-  function log(level, msg) {
-    const container = document.getElementById('systemLog');
-    const entry = document.createElement('div');
-    entry.className = 'log-entry';
-    entry.innerHTML = '<span class="log-time">' + nowTime() + '</span><span class="log-level ' + level + '">' + level + '</span><span class="log-msg">' + msg + '</span>';
-    container.insertBefore(entry, container.firstChild);
-    while (container.children.length > 50) container.removeChild(container.lastChild);
-  }
+  document.getElementById('apiUrl').addEventListener('input', updateFlowerLink);
 
-  function toast(msg, type) {
+  function toast(msg, type = '') {
     const el = document.createElement('div');
-    el.className = 'toast ' + (type || '');
+    el.className = `toast ${type}`;
     el.textContent = msg;
     document.getElementById('toastContainer').appendChild(el);
     setTimeout(() => el.remove(), 3500);
   }
 
   function shortId(id) {
-    return id ? id.slice(0, 8) + '…' : '?';
+    return id ? id.split('-')[0] + '…' : '?';
   }
-
-  function sleep(ms) {
-    return new Promise(r => setTimeout(r, ms));
-  }
-
-  // ── Clock ─────────────────────────────────────────────────────────────────
-  setInterval(() => {
-    document.getElementById('clock').textContent = nowTime();
-  }, 1000);
-  document.getElementById('bootTime').textContent = nowTime();
-  document.getElementById('visitorId').textContent = 'ID: ' + visitorId;
-
-  // ── Health Checks ─────────────────────────────────────────────────────────
-  async function checkHealth(retries, delay) {
-    retries = retries || 5;
-    delay = delay || 2000;
-    for (let i = 0; i < retries; i++) {
-      try {
-        const start = performance.now();
-        const res = await fetch(apiBase() + '/health', { method: 'GET', headers: { 'Accept': 'application/json' } });
-        const dur = Math.round(performance.now() - start);
-        if (res.ok) {
-          apiOnline = true;
-          document.getElementById('apiDot').className = 'health-dot online';
-          document.getElementById('apiText').textContent = 'API ' + dur + 'ms';
-          log('success', 'API online (' + dur + 'ms)');
-          return;
-        }
-      } catch (e) {
-        log('warn', 'API check attempt ' + (i + 1) + '/' + retries + ' failed');
-      }
-      await sleep(delay);
-    }
-    apiOnline = false;
-    document.getElementById('apiDot').className = 'health-dot offline';
-    document.getElementById('apiText').textContent = 'API OFF';
-    log('error', 'API unreachable after ' + retries + ' attempts');
-    toast('API appears to be sleeping (Render cold start). Retrying in background...', 'warn');
-  }
-
-  async function checkWorkerHealth(retries, delay) {
-    retries = retries || 5;
-    delay = delay || 3000;
-    for (let i = 0; i < retries; i++) {
-      try {
-        const res = await fetch(apiBase() + '/health/worker', { method: 'GET', headers: { 'Accept': 'application/json' } });
-        if (res.ok) {
-          const data = await res.json();
-          workerOnline = data.status === 'ok';
-          const count = data.workers_online || 0;
-          const active = data.active_tasks || 0;
-          document.getElementById('workerDot').className = workerOnline ? 'health-dot online' : 'health-dot offline';
-          document.getElementById('workerText').textContent = workerOnline ? 'Worker ' + count : 'Worker OFF';
-          document.getElementById('statWorkers').textContent = count;
-          document.getElementById('workerCountBadge').textContent = count + ' node' + (count !== 1 ? 's' : '') + ' · ' + active + ' active';
-
-          if (workerOnline) {
-            document.getElementById('workerCard').style.display = 'block';
-            document.getElementById('workerOfflineMsg').style.display = 'none';
-            document.getElementById('workerStatusText').textContent = 'ONLINE · ' + active + ' tasks';
-            document.getElementById('workerStatusText').className = 'worker-status';
-            document.getElementById('ekgPath').style.animation = 'ekg-scroll 2s linear infinite';
-          } else {
-            document.getElementById('workerCard').style.display = 'none';
-            document.getElementById('workerOfflineMsg').style.display = 'block';
-            document.getElementById('ekgPath').style.animation = 'none';
-          }
-          if (workerOnline) log('success', 'Worker check: ' + count + ' online, ' + active + ' active');
-          return;
-        }
-      } catch (e) {}
-      await sleep(delay);
-    }
-    workerOnline = false;
-    document.getElementById('workerDot').className = 'health-dot offline';
-    document.getElementById('workerText').textContent = 'Worker OFF';
-    document.getElementById('statWorkers').textContent = '—';
-    document.getElementById('workerCard').style.display = 'none';
-    document.getElementById('workerOfflineMsg').style.display = 'block';
-  }
-
-  // Initial health checks
-  checkHealth();
-  checkWorkerHealth();
-  setInterval(() => checkHealth(2, 3000), 30000);
-  setInterval(() => checkWorkerHealth(2, 3000), 30000);
 
   // ── Form dynamics ─────────────────────────────────────────────────────────
   function updateFields() {
@@ -833,17 +832,19 @@
     const e = EXAMPLES[key];
     document.getElementById('jobType').value = e.type;
     updateFields();
+
     if (e.type === 'generic') {
       document.getElementById('steps').value = e.steps;
     } else if (e.type === 'email') {
-      document.getElementById('emailTo').value = e.to;
+      document.getElementById('emailTo').value      = e.to;
       document.getElementById('emailSubject').value = e.subject;
-      document.getElementById('emailBody').value = e.body;
+      document.getElementById('emailBody').value    = e.body;
     } else {
       document.getElementById('imgFile').value = e.filename;
-      document.getElementById('imgW').value = e.width;
-      document.getElementById('imgH').value = e.height;
+      document.getElementById('imgW').value    = e.width;
+      document.getElementById('imgH').value    = e.height;
     }
+
     submitJob();
   }
 
@@ -855,31 +856,21 @@
   function updateConstraintBar() {
     const active  = activeCount();
     const session = sessionCount;
-    const rate    = rateCount;
 
     const activePct  = (active  / LIMIT_CONCURRENT) * 100;
-    const sessionPct = (session / LIMIT_SESSION) * 100;
-    const ratePct    = (rate    / LIMIT_RATE) * 100;
+    const sessionPct = (session / LIMIT_SESSION)    * 100;
 
     const activeLevel  = active  >= LIMIT_CONCURRENT ? 'danger' : active  >= 2 ? 'warn' : 'ok';
     const sessionLevel = session >= LIMIT_SESSION    ? 'danger' : session >= 8  ? 'warn' : 'ok';
-    const rateLevel    = rate    >= LIMIT_RATE       ? 'danger' : rate    >= 7  ? 'warn' : 'ok';
 
-    document.getElementById('cActiveVal').textContent  = active + ' / ' + LIMIT_CONCURRENT;
-    document.getElementById('cSessionVal').textContent   = session + ' / ' + LIMIT_SESSION;
-    document.getElementById('cRateVal').textContent    = rate + ' / ' + LIMIT_RATE;
-
-    document.getElementById('cActiveVal').className  = 'constraint-val ' + activeLevel;
-    document.getElementById('cSessionVal').className = 'constraint-val ' + sessionLevel;
-    document.getElementById('cRateVal').className    = 'constraint-val ' + rateLevel;
-
-    document.getElementById('cActiveFill').style.width  = Math.min(activePct, 100) + '%';
-    document.getElementById('cSessionFill').style.width = Math.min(sessionPct, 100) + '%';
-    document.getElementById('cRateFill').style.width    = Math.min(ratePct, 100) + '%';
-
-    document.getElementById('cActiveFill').className  = 'constraint-fill ' + (activeLevel === 'ok' ? '' : activeLevel);
-    document.getElementById('cSessionFill').className = 'constraint-fill ' + (sessionLevel === 'ok' ? '' : sessionLevel);
-    document.getElementById('cRateFill').className    = 'constraint-fill ' + (rateLevel === 'ok' ? '' : rateLevel);
+    document.getElementById('cActiveVal').textContent   = `${active} / ${LIMIT_CONCURRENT}`;
+    document.getElementById('cSessionVal').textContent  = `${session} / ${LIMIT_SESSION}`;
+    document.getElementById('cActiveVal').className     = `constraint-val ${activeLevel}`;
+    document.getElementById('cSessionVal').className    = `constraint-val ${sessionLevel}`;
+    document.getElementById('cActiveFill').style.width  = `${Math.min(activePct, 100)}%`;
+    document.getElementById('cSessionFill').style.width = `${Math.min(sessionPct, 100)}%`;
+    document.getElementById('cActiveFill').className    = `constraint-fill ${activeLevel === 'ok' ? '' : activeLevel}`;
+    document.getElementById('cSessionFill').className   = `constraint-fill ${sessionLevel === 'ok' ? '' : sessionLevel}`;
 
     const blocked = active >= LIMIT_CONCURRENT || session >= LIMIT_SESSION;
     document.getElementById('submitBtn').disabled = blocked;
@@ -900,25 +891,16 @@
       return false;
     }
     if (active >= LIMIT_CONCURRENT) {
-      toast('Max 3 concurrent jobs. Wait for one to finish.', 'warn');
+      toast(`Max ${LIMIT_CONCURRENT} concurrent jobs. Wait for one to finish.`, 'warn');
       return false;
     }
-    if (rateCount >= LIMIT_RATE) {
-      toast('Rate limit reached (10/min). Wait before submitting.', 'warn');
-      return false;
-    }
+    if (session >= 8) toast(`Warning: ${session}/10 session jobs used`, 'warn');
     return true;
   }
 
   // ── Submit ─────────────────────────────────────────────────────────────────
   async function submitJob() {
-    if (!apiOnline) {
-      toast('API is offline. Retrying health check...', 'warn');
-      checkHealth();
-      return;
-    }
     if (!checkConstraints()) return;
-
     const btn = document.getElementById('submitBtn');
     const type = document.getElementById('jobType').value;
     const body = { type };
@@ -939,19 +921,11 @@
     btn.textContent = 'Submitting…';
 
     try {
-      const res = await fetch(apiBase() + '/jobs', {
+      const res = await fetch(`${apiBase()}/jobs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-
-      if (res.status === 429) {
-        const retry = res.headers.get('Retry-After') || '60';
-        rateCount = LIMIT_RATE;
-        toast('Rate limit exceeded. Retry after ' + retry + 's', 'warn');
-        log('warn', 'Rate limit hit — retry after ' + retry + 's');
-        return;
-      }
 
       if (!res.ok) {
         const err = await res.json();
@@ -960,14 +934,11 @@
 
       const data = await res.json();
       sessionCount++;
-      rateCount++;
       addJob(data.task_id, type);
       startPolling(data.task_id);
-      toast('Job submitted: ' + shortId(data.task_id));
-      log('success', 'Job ' + shortId(data.task_id) + ' submitted');
+      toast(`Job submitted: ${shortId(data.task_id)}`);
     } catch (e) {
-      toast('Error: ' + e.message, 'error');
-      log('error', 'Submit failed: ' + e.message);
+      toast(`Error: ${e.message}`, 'error');
     } finally {
       btn.disabled = false;
       btn.textContent = '▶ Submit Job';
@@ -983,46 +954,42 @@
   function startPolling(id) {
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(apiBase() + '/jobs/' + id);
+        const res = await fetch(`${apiBase()}/jobs/${id}`);
         if (!res.ok) return;
         const data = await res.json();
         const job = jobs.get(id);
         if (!job) return;
 
-        const oldStatus = job.status;
         job.status = data.status;
         job.progress = data.progress || null;
         job.result = data.result || null;
         job.error = data.error || null;
-
-        if (oldStatus !== data.status) {
-          log('info', 'Job ' + shortId(id) + ' → ' + data.status);
-          if (data.status === 'SUCCESS') toast('✓ Job done: ' + shortId(id));
-          if (data.status === 'FAILURE') toast('✗ Job failed: ' + shortId(id), 'error');
-        }
 
         renderJobs();
 
         if (['SUCCESS', 'FAILURE', 'REVOKED'].includes(data.status)) {
           clearInterval(interval);
           pollers.delete(id);
+          if (data.status === 'SUCCESS') toast(`✓ Job done: ${shortId(id)}`);
+          if (data.status === 'FAILURE') toast(`✗ Job failed: ${shortId(id)}`, 'error');
         }
-      } catch (e) {}
-    }, 1500);
+      } catch (e) {
+        // swallow network errors silently
+      }
+    }, 3000);
     pollers.set(id, interval);
   }
 
   async function revokeJob(id) {
     try {
-      await fetch(apiBase() + '/jobs/' + id, { method: 'DELETE' });
+      await fetch(`${apiBase()}/jobs/${id}`, { method: 'DELETE' });
       const job = jobs.get(id);
       if (job) { job.status = 'REVOKED'; renderJobs(); }
       const poller = pollers.get(id);
       if (poller) { clearInterval(poller); pollers.delete(id); }
-      toast('Job revoked: ' + shortId(id), 'warn');
-      log('warn', 'Job ' + shortId(id) + ' revoked');
+      toast(`Job revoked: ${shortId(id)}`, 'warn');
     } catch (e) {
-      toast('Revoke failed: ' + e.message, 'error');
+      toast(`Revoke failed: ${e.message}`, 'error');
     }
   }
 
@@ -1031,22 +998,15 @@
     pollers.clear();
     jobs.clear();
     sessionCount = 0;
-    rateCount = 0;
     renderJobs();
-    log('info', 'All jobs cleared');
-  }
-
-  function clearLog() {
-    document.getElementById('systemLog').innerHTML = '';
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
   function renderJobs() {
     updateStats();
     updateConstraintBar();
-    updatePipeline();
-
     const container = document.getElementById('jobList');
+
     if (jobs.size === 0) {
       container.innerHTML = '<div class="empty"></div>';
       return;
@@ -1057,48 +1017,40 @@
     container.innerHTML = sorted.map(([id, job]) => {
       const isActive = ['PENDING','STARTED','PROGRESS'].includes(job.status);
       const pct = job.progress ? Math.round((job.progress.current / job.progress.total) * 100) : 0;
+      const progressHtml = job.status === 'PROGRESS' ? `
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:${pct}%"></div>
+        </div>
+        <div class="progress-text">${job.progress.step || ''} — ${pct}%</div>
+      ` : job.status === 'SUCCESS' ? `
+        <div class="progress-wrap">
+          <div class="progress-bar done" style="width:100%"></div>
+        </div>
+      ` : '';
 
-      const progressHtml = job.status === 'PROGRESS' ?
-        '<div class="progress-wrap"><div class="progress-bar" style="width:' + pct + '%"></div></div><div class="progress-text">' + (job.progress.step || '') + ' — ' + pct + '%</div>' :
-        job.status === 'SUCCESS' ? '<div class="progress-wrap"><div class="progress-bar done" style="width:100%"></div></div>' : '';
-
-      const resultHtml = job.result ? '<div class="job-result">' + JSON.stringify(job.result, null, 2) + '</div>' :
-        job.error ? '<div class="job-result error">' + job.error + '</div>' : '';
+      const resultHtml = job.result ? `
+        <div class="job-result">${JSON.stringify(job.result, null, 2)}</div>
+      ` : job.error ? `
+        <div class="job-result error">${job.error}</div>
+      ` : '';
 
       const spinnerHtml = isActive ? '<span class="spinner"></span>' : '';
 
-      return '<div class="job-card status-' + job.status + '">' +
-        '<div class="job-top"><div class="job-id">ID: <span>' + shortId(id) + '</span></div>' +
-        '<div class="job-actions">' + spinnerHtml + '<span class="badge badge-' + job.status + '">' + job.status + '</span>' +
-        (isActive ? '<button class="btn btn-danger" onclick="revokeJob(\'' + id + '\')">✕</button>' : '') + '</div></div>' +
-        '<div class="job-type">type: ' + job.type + '</div>' + progressHtml + resultHtml + '</div>';
-    }).join('');
-  }
-
-  function updatePipeline() {
-    const pending = [...jobs.entries()].filter(([,j]) => j.status === 'PENDING');
-    const processing = [...jobs.entries()].filter(([,j]) => ['STARTED','PROGRESS'].includes(j.status));
-    const completed = [...jobs.entries()].filter(([,j]) => ['SUCCESS','FAILURE','REVOKED'].includes(j.status));
-
-    document.getElementById('countPending').textContent = pending.length;
-    document.getElementById('countProcessing').textContent = processing.length;
-    document.getElementById('countCompleted').textContent = completed.length;
-
-    renderLane('lanePending', pending);
-    renderLane('laneProcessing', processing);
-    renderLane('laneCompleted', completed);
-  }
-
-  function renderLane(elId, items) {
-    const el = document.getElementById(elId);
-    if (items.length === 0) { el.innerHTML = ''; return; }
-    el.innerHTML = items.map(([id, job]) => {
-      const pct = job.progress ? Math.round((job.progress.current / job.progress.total) * 100) : 0;
-      const progress = job.status === 'PROGRESS' ? '<div class="progress-wrap"><div class="progress-bar" style="width:' + pct + '%"></div></div>' : '';
-      return '<div class="job-card status-' + job.status + '">' +
-        '<div class="job-top"><div class="job-id">ID: <span>' + shortId(id) + '</span></div>' +
-        '<span class="badge badge-' + job.status + '">' + job.status + '</span></div>' +
-        '<div class="job-type">type: ' + job.type + '</div>' + progress + '</div>';
+      return `
+        <div class="job-card status-${job.status}">
+          <div class="job-top">
+            <div class="job-id">ID: <span>${shortId(id)}</span></div>
+            <div class="job-actions">
+              ${spinnerHtml}
+              <span class="badge badge-${job.status}">${job.status}</span>
+              ${isActive ? `<button class="btn btn-danger" onclick="revokeJob('${id}')">✕</button>` : ''}
+            </div>
+          </div>
+          <div class="job-type">type: ${job.type}</div>
+          ${progressHtml}
+          ${resultHtml}
+        </div>
+      `;
     }).join('');
   }
 
@@ -1109,18 +1061,6 @@
     document.getElementById('statDone').textContent    = all.filter(j => j.status === 'SUCCESS').length;
     document.getElementById('statFailed').textContent  = all.filter(j => j.status === 'FAILURE').length;
   }
-
-  // Rate limit reset every minute
-  setInterval(() => { rateCount = 0; updateConstraintBar(); }, 60000);
-
-  // Flower link
-  function updateFlowerLink() {
-    const base = apiBase();
-    const flowerPort = base.includes('localhost') ? 'http://localhost:5555' : base.replace(/:\d+$/, ':5555');
-    document.getElementById('flowerLink').href = flowerPort;
-  }
-  document.getElementById('apiUrl')?.addEventListener('input', updateFlowerLink);
-  updateFlowerLink();
 </script>
 </body>
 </html>
