@@ -2,24 +2,34 @@ import os
 import time
 import random
 from celery import Celery
+from config import settings
 
-REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 
-app = Celery(
-    "tasks",
-    broker=REDIS_URL,
-    backend=REDIS_URL,
-)
+# Build Celery config with conditional TLS for Upstash rediss:// URLs
+celery_config = {
+    "broker_url": settings.REDIS_URL,
+    "result_backend": settings.REDIS_URL,
+    "task_serializer": "json",
+    "result_serializer": "json",
+    "accept_content": ["json"],
+    "timezone": "UTC",
+    "enable_utc": True,
+    "task_track_started": True,
+    "result_expires": 3600,
+}
 
-app.conf.update(
-    task_serializer="json",
-    result_serializer="json",
-    accept_content=["json"],
-    timezone="UTC",
-    enable_utc=True,
-    task_track_started=True,
-    result_expires=3600,
-)
+# Upstash uses rediss:// (TLS). Celery needs explicit SSL config for that.
+if settings.REDIS_URL.startswith("rediss://"):
+    ssl_cfg = {
+        "ssl_cert_reqs": os.environ.get("REDIS_SSL_CERT_REQS", "CERT_NONE"),
+        "ssl_ca_certs": None,
+        "ssl_certfile": None,
+        "ssl_keyfile": None,
+    }
+    celery_config["broker_use_ssl"] = ssl_cfg
+    celery_config["redis_backend_use_ssl"] = ssl_cfg
+
+app = Celery("tasks", **celery_config)
 
 
 @app.task(bind=True, name="tasks.process_job")
@@ -33,7 +43,6 @@ def process_job(self, payload: dict) -> dict:
             state="PROGRESS",
             meta={"current": i, "total": steps, "step": f"Processing step {i}/{steps}"},
         )
-        # simulate work
         time.sleep(random.uniform(0.5, 1.5))
 
     return {

@@ -6,9 +6,9 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY tasks.py .
+COPY config.py .
+COPY rate_limiter.py .
 
-# Concurrency=4 workers per pod; prefetch=1 prevents task hoarding
-CMD ["celery", "-A", "tasks", "worker", \
-     "--loglevel=info", \
-     "--concurrency=4", \
-     "--prefetch-multiplier=1"]
+ENV PYTHONUNBUFFERED=1
+
+CMD ["celery", "-A", "tasks", "worker", "--loglevel=info", "--concurrency=2"]
