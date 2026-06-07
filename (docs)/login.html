@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TaskQueue — Operator Authentication</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;700&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --border-bright: #3a3a3a;
+    --text: #e8e8e8;
+    --text-dim: #666;
+    --text-muted: #444;
+    --accent: #00ff88;
+    --accent-dim: rgba(0,255,136,0.12);
+    --accent-glow: rgba(0,255,136,0.4);
+    --warn: #ffaa00;
+    --warn-dim: rgba(255,170,0,0.12);
+    --danger: #ff4455;
+    --danger-dim: rgba(255,68,85,0.12);
+    --info: #4488ff;
+    --info-dim: rgba(68,136,255,0.12);
+    --purple: #aa66ff;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg); color: var(--text); font-family: var(--mono);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 40px 40px; pointer-events: none; z-index: 0;
+  }
+
+  .auth-wrap { position: relative; z-index: 1; width: 100%; max-width: 400px; padding: 0 24px; }
+
+  .auth-card {
+    background: var(--surface); border: 1px solid var(--border);
+    animation: cardEnter 0.5s ease;
+  }
+  @keyframes cardEnter {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .auth-header {
+    text-align: center; padding: 32px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-mark {
+    display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.2em;
+    color: var(--accent); border: 1px solid var(--accent); padding: 3px 8px;
+    text-transform: uppercase; margin-bottom: 16px;
+  }
+  .auth-title {
+    font-family: var(--sans); font-size: 20px; font-weight: 600;
+    color: var(--text); letter-spacing: -0.02em; margin-bottom: 4px;
+  }
+  .auth-sub {
+    font-size: 12px; color: var(--text-dim); letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .auth-tabs {
+    display: flex; border-bottom: 1px solid var(--border);
+  }
+  .auth-tab {
+    flex: 1; padding: 14px; background: transparent; border: none;
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text-dim); cursor: pointer; transition: all 0.15s;
+    position: relative;
+  }
+  .auth-tab:hover { color: var(--text); }
+  .auth-tab.active { color: var(--accent); background: var(--accent-dim); }
+  .auth-tab.active::after {
+    content: ''; position: absolute; bottom: -1px; left: 20%; right: 20%;
+    height: 2px; background: var(--accent);
+  }
+
+  .auth-body { padding: 24px; }
+
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 6px;
+  }
+  .field input {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--mono); font-size: 13px;
+    padding: 10px 12px; outline: none; transition: border-color 0.15s;
+  }
+  .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-glow); }
+  .field input::placeholder { color: var(--text-muted); }
+  .field-hint { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+
+  .btn {
+    display: block; width: 100%; padding: 12px;
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; border: none; transition: all 0.15s;
+    text-align: center;
+  }
+  .btn-primary {
+    background: var(--accent); color: #000; margin-top: 4px;
+  }
+  .btn-primary:hover { background: #00ffaa; box-shadow: 0 0 20px var(--accent-glow); }
+  .btn-primary:active { transform: translateY(1px); }
+  .btn-primary:disabled {
+    background: var(--border-bright); color: var(--text-muted);
+    cursor: not-allowed; box-shadow: none;
+  }
+
+  .terminal {
+    background: var(--bg); border: 1px solid var(--border); padding: 12px;
+    font-family: var(--mono); font-size: 11px; min-height: 80px; max-height: 120px;
+    overflow-y: auto; color: var(--text-dim); margin-top: 16px;
+  }
+  .term-line {
+    padding: 2px 0; display: flex; gap: 8px; animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .term-prompt { color: var(--accent); white-space: nowrap; }
+  .term-msg { word-break: break-all; }
+  .term-msg.ok { color: var(--accent); }
+  .term-msg.err { color: var(--danger); }
+  .term-msg.warn { color: var(--warn); }
+  .cursor {
+    display: inline-block; width: 6px; height: 1em; background: var(--accent);
+    animation: blink 1s step-end infinite; vertical-align: text-bottom;
+  }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+  .auth-footer {
+    text-align: center; padding: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .auth-footer a {
+    font-size: 11px; color: var(--text-dim); text-decoration: none;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .auth-footer a:hover { color: var(--accent); }
+
+  @media (max-width: 480px) {
+    .auth-wrap { padding: 0 16px; }
+    .auth-body { padding: 20px 16px; }
+  }
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="logo-mark">TQ</div>
+      <div class="auth-title">TaskQueue</div>
+      <div class="auth-sub">Operator Authentication</div>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login" onclick="switchTab('login')">Login</button>
+      <button class="auth-tab" data-tab="register" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <div class="auth-body">
+      <!-- Login Form -->
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="field">
+          <label>Operator ID</label>
+          <input type="text" id="loginUser" placeholder="operator_name" autocomplete="username">
+        </div>
+        <div class="field">
+          <label>Access Key</label>
+          <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary" id="loginBtn">Authenticate</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" style="display:none" onsubmit="handleRegister(event)">
+        <div class="field">
+          <label>Operator ID</label>
+          <input type="text" id="regUser" placeholder="choose_a_handle" autocomplete="username">
+          <div class="field-hint">3-32 chars, alphanumeric + underscore</div>
+        </div>
+        <div class="field">
+          <label>Access Key</label>
+          <input type="password" id="regPass" placeholder="min 8 characters" autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label>Confirm Key</label>
+          <input type="password" id="regConfirm" placeholder="re-enter key" autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-primary" id="regBtn">Create Account</button>
+      </form>
+
+      <div class="terminal" id="terminal">
+        <div class="term-line">
+          <span class="term-prompt">$</span>
+          <span class="term-msg">System ready. Awaiting credentials...</span>
+          <span class="cursor"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-footer">
+      <a href="index.html">← Return to Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = 'https://taskqueue-api.onrender.com';
+
+  function switchTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+    document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+    term('Switched to ' + tab + ' mode');
+  }
+
+  function term(msg, type) {
+    type = type || '';
+    const t = document.getElementById('terminal');
+    const line = document.createElement('div');
+    line.className = 'term-line';
+    line.innerHTML = '<span class="term-prompt">$</span><span class="term-msg ' + type + '">' + msg + '</span>';
+    // Remove cursor from previous last line
+    const last = t.lastElementChild;
+    if (last) {
+      const c = last.querySelector('.cursor');
+      if (c) c.remove();
+    }
+    t.appendChild(line);
+    t.scrollTop = t.scrollHeight;
+    while (t.children.length > 20) t.removeChild(t.firstChild);
+  }
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    const user = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    const btn = document.getElementById('loginBtn');
+
+    if (!user || !pass) { term('Error: All fields required', 'err'); return; }
+
+    btn.disabled = true; btn.textContent = 'Authenticating...';
+    term('Authenticating ' + user + '...');
+
+    // MOCK: Phase 2 will wire to /auth/login
+    await sleep(1000);
+
+    const token = 'mock_jwt_' + Math.random().toString(36).substr(2, 16);
+    localStorage.setItem('tq_auth_token', token);
+    localStorage.setItem('tq_auth_user', user);
+
+    term('Authentication successful', 'ok');
+    term('Redirecting to dashboard...', 'ok');
+    await sleep(600);
+    window.location.href = 'index.html';
+  }
+
+  async function handleRegister(e) {
+    e.preventDefault();
+    const user = document.getElementById('regUser').value.trim();
+    const pass = document.getElementById('regPass').value;
+    const confirm = document.getElementById('regConfirm').value;
+    const btn = document.getElementById('regBtn');
+
+    if (!user || !pass || !confirm) { term('Error: All fields required', 'err'); return; }
+    if (user.length < 3 || user.length > 32) { term('Error: ID must be 3-32 chars', 'err'); return; }
+    if (!/^[a-zA-Z0-9_]+$/.test(user)) { term('Error: ID must be alphanumeric + underscore', 'err'); return; }
+    if (pass.length < 8) { term('Error: Key must be at least 8 chars', 'err'); return; }
+    if (pass !== confirm) { term('Error: Keys do not match', 'err'); return; }
+
+    btn.disabled = true; btn.textContent = 'Creating...';
+    term('Registering operator ' + user + '...');
+
+    // MOCK: Phase 2 will wire to /auth/register
+    await sleep(1200);
+
+    term('Account created successfully', 'ok');
+    term('Please log in with your credentials', 'ok');
+
+    await sleep(400);
+    switchTab('login');
+    document.getElementById('loginUser').value = user;
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+</script>
+</body>
+</html>
