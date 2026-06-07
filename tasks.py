@@ -1,35 +1,55 @@
 import os
+import ssl
 import time
 import random
+from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 from celery import Celery
 from config import settings
 
 
-# Build Celery config with conditional TLS for Upstash rediss:// URLs
-celery_config = {
-    "broker_url": settings.REDIS_URL,
-    "result_backend": settings.REDIS_URL,
-    "task_serializer": "json",
-    "result_serializer": "json",
-    "accept_content": ["json"],
-    "timezone": "UTC",
-    "enable_utc": True,
-    "task_track_started": True,
-    "result_expires": 3600,
-}
+def _build_redis_url_with_ssl(raw_url: str) -> str:
+    """
+    Upstash gives rediss:// URLs. Celery requires ssl_cert_reqs in the URL
+    query params. We inject CERT_NONE if not already present.
+    """
+    parsed = urlparse(raw_url)
 
-# Upstash uses rediss:// (TLS). Celery needs explicit SSL config for that.
-if settings.REDIS_URL.startswith("rediss://"):
-    ssl_cfg = {
-        "ssl_cert_reqs": os.environ.get("REDIS_SSL_CERT_REQS", "CERT_NONE"),
-        "ssl_ca_certs": None,
-        "ssl_certfile": None,
-        "ssl_keyfile": None,
-    }
-    celery_config["broker_use_ssl"] = ssl_cfg
-    celery_config["redis_backend_use_ssl"] = ssl_cfg
+    # Only modify rediss:// URLs
+    if parsed.scheme != "rediss":
+        return raw_url
 
-app = Celery("tasks", **celery_config)
+    query = parse_qs(parsed.query)
+
+    # Inject ssl_cert_reqs if missing
+    if "ssl_cert_reqs" not in query:
+        query["ssl_cert_reqs"] = ["CERT_NONE"]
+
+    # Rebuild URL
+    new_query = urlencode(query, doseq=True)
+    return urlunparse((
+        parsed.scheme,
+        parsed.netloc,
+        parsed.path,
+        parsed.params,
+        new_query,
+        parsed.fragment,
+    ))
+
+
+REDIS_URL = _build_redis_url_with_ssl(settings.REDIS_URL)
+
+app = Celery(
+    "tasks",
+    broker_url=REDIS_URL,
+    result_backend=REDIS_URL,
+    task_serializer="json",
+    result_serializer="json",
+    accept_content=["json"],
+    timezone="UTC",
+    enable_utc=True,
+    task_track_started=True,
+    result_expires=3600,
+)
 
 
 @app.task(bind=True, name="tasks.process_job")
