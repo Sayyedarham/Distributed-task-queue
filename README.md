@@ -2,7 +2,7 @@
 
 > **Live Demo:** [taskqueue-dashboard](https://sayyedarham.github.io/taskqueue-dashboard/) &nbsp;|&nbsp; **API:** [api-production-f1021.up.railway.app](https://api-production-f1021.up.railway.app/health)
 
-A production-deployed distributed task queue system built with **FastAPI**, **Celery**, and **Redis** — featuring real-time job tracking, a terminal-style dashboard, and full cloud deployment on Railway. Designed to demonstrate scalable async architecture patterns used in modern full-stack engineering.
+A production-deployed distributed task queue system built with **FastAPI**, **Celery**, and **Redis** — featuring real-time job tracking, a terminal-style dashboard, and full cloud deployment on Railway. Designed a scalable async architecture pattern used in modern full-stack engineering.
 
 ---
 
